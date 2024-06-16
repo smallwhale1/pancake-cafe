@@ -31,6 +31,10 @@ export default class Sprite {
     container.append(this.img);
   }
 
+  updateImgSrc(newSrc: string) {
+    this.img.src = newSrc;
+  }
+
   moveX(x: number) {
     // update logically
     this.posX += x;

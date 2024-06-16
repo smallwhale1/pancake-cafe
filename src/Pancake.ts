@@ -39,16 +39,24 @@ class Pancake {
   }
 
   updateCookTime(updateTime: number) {
+    // would be nice to hook up reactions so that when cookType changes,
+    // the relevant ui updates (image sources)
     this.cookTime += updateTime;
     if (this.cookType === CookType.UNCOOKED && this.cookTime >= 3000) {
       this.cookType = CookType.COOKED;
+      this.sprite.updateImgSrc();
+      // update image source
+    } else if (this.cookType === CookType.COOKED && this.cookTime >= 10000) {
+      this.cookType = CookType.TOASTY;
+      this.sprite.updateImgSrc();
     }
   }
 
   flipPancake() {
     this.flipped = true;
 
-    // update sprite image
+    // update sprite image with cooked pancake
+    this.sprite.updateImgSrc();
   }
 
   addTopping() {}
