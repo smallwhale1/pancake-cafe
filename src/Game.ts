@@ -3,13 +3,13 @@ import { Pancake } from './Pancake';
 import { Stove } from './Stove';
 import { StackPlate } from './StackPlate';
 import {
-  BACKGROUND_COLOR,
   CHARACTER_X,
   CHARACTER_Y,
   KAI_SRC,
   KAI_WIDTH,
   SERVE_BTN_WIDTH,
   SPATULA_ACTIVE,
+  SPATULA_HEIGHT,
   SPATULA_IDLE,
   SPATULA_START_X,
   SPATULA_START_Y,
@@ -19,6 +19,7 @@ import { Tool } from './enums';
 import Sprite from './Sprite';
 import { Plate } from './Plate';
 import { Button } from './Button';
+import { TextBox } from './TextBox';
 
 const container = document.getElementById('game-container') as HTMLDivElement;
 container.style.width = '1000px';
@@ -32,7 +33,8 @@ export default class Game {
   private _lastTime = 0;
   private _currIndex = 0;
   private stackPlate!: StackPlate;
-  //   private spatula: Spatula;
+
+  // tools
 
   constructor() {
     this.pancakes = [];
@@ -52,6 +54,8 @@ export default class Game {
       container,
       onClick: () => {},
     });
+
+    new TextBox({ container, game: this, text: '' });
   };
 
   private renderKitchen = () => {
@@ -78,22 +82,56 @@ export default class Game {
       width: SPATULA_WIDTH,
       container: container,
       onClick: () => {
-        this.setTool(Tool.SPATULA);
-        window.addEventListener('pointermove', (e: PointerEvent) => {
-          spatula.moveX(e.movementX);
-          spatula.moveY(e.movementY);
-        });
-        spatula.img.src = SPATULA_ACTIVE;
-        spatula.img.style.pointerEvents = 'none';
+        // this.setTool(Tool.SPATULA);
+        // window.addEventListener('pointermove', (e: PointerEvent) => {
+        //   spatula.moveX(e.movementX);
+        //   spatula.moveY(e.movementY);
+        // });
+        // spatula.img.src = SPATULA_ACTIVE;
+        // spatula.img.style.pointerEvents = 'none';
       },
     });
 
     spatula.img.classList.add('spatula');
 
+    // setup spatula area
+
+    const spatulaArea = document.createElement('div');
+    spatulaArea.style.position = 'absolute';
+    spatulaArea.style.left = `${SPATULA_START_X}px`;
+    spatulaArea.style.top = `${SPATULA_START_Y}px`;
+    spatulaArea.style.width = `${SPATULA_WIDTH}px`;
+    spatulaArea.style.height = `${SPATULA_HEIGHT}px`;
+    container.appendChild(spatulaArea);
+
+    spatulaArea.addEventListener('pointerdown', (e: PointerEvent) => {
+      if (this.tool === Tool.SPATULA) {
+        this.setTool(null);
+        spatula.img.src = SPATULA_IDLE;
+        // set it down
+        spatula.setX(SPATULA_START_X);
+        spatula.setY(SPATULA_START_Y);
+      } else {
+        this.setTool(Tool.SPATULA);
+        spatula.setX(e.clientX - SPATULA_WIDTH / 2);
+        spatula.setY(e.clientY - SPATULA_HEIGHT / 2);
+
+        spatula.img.src = SPATULA_ACTIVE;
+        spatula.img.style.pointerEvents = 'none';
+      }
+    });
+
+    window.addEventListener('pointermove', (e: PointerEvent) => {
+      if (this.tool === Tool.SPATULA) {
+        spatula.setX(e.clientX - SPATULA_WIDTH / 2);
+        spatula.setY(e.clientY - SPATULA_HEIGHT / 2);
+      }
+    });
+
     requestAnimationFrame(this.animate);
   };
 
-  public setTool = (tool: Tool) => {
+  public setTool = (tool: Tool | null) => {
     this.tool = tool;
     console.log('setting tool');
   };
@@ -105,6 +143,7 @@ export default class Game {
           container,
           index: this._currIndex,
           stackPlate: this.stackPlate,
+          game: this,
         }),
       );
       this._currIndex++;
@@ -119,5 +158,9 @@ export default class Game {
       pancake.updateCookTime(timeElapsed);
     });
     requestAnimationFrame(this.animate);
+  };
+
+  public getTool = () => {
+    return this.tool;
   };
 }

@@ -1,3 +1,4 @@
+import type Game from './Game';
 import { ProgressBar } from './ProgressBar';
 import Sprite from './Sprite';
 import type { StackPlate } from './StackPlate';
@@ -26,32 +27,35 @@ import {
   TOASTY_PANCAKE_SRC,
   UNCOOKED_PANCAKE_SRC,
 } from './constants';
-import { CookType, PancakeState, Topping } from './enums';
+import { CookType, PancakeState, Tool, Topping } from './enums';
 
 interface PancakeProps {
   container: HTMLDivElement;
   index: number;
   stackPlate: StackPlate;
+  game: Game;
 }
 
 export class Pancake {
   private cookTime: number;
   private cookType: CookType;
-  private flipped: boolean;
-  private sprite: Sprite;
   private topping: Topping | undefined;
   private container: HTMLDivElement;
   private progressBar: ProgressBar;
   private index: number;
   private pancakeState: PancakeState;
   private stackPlate: StackPlate;
+  private game: Game;
 
   private _pointerDown = false;
-  private _startX;
-  private _startY;
+  private _startX: number;
+  private _startY: number;
 
-  constructor({ container, index, stackPlate }: PancakeProps) {
+  public sprite: Sprite;
+
+  constructor({ container, index, stackPlate, game }: PancakeProps) {
     this.container = container;
+    this.game = game;
     this.stackPlate = stackPlate;
     this.index = index;
     this._startX = PANCAKE_START_X + (index % 3) * (PANCAKE_WIDTH + PADDING);
@@ -78,7 +82,6 @@ export class Pancake {
     this.topping = undefined;
     this.cookTime = 0;
     this.cookType = CookType.UNCOOKED;
-    this.flipped = false;
     this.pancakeState = PancakeState.STOVE;
 
     // set timer to update cook time
@@ -120,40 +123,28 @@ export class Pancake {
       const stackPlateBounds = {
         minX: STACK_PLATE_START_X,
         maxX: STACK_PLATE_START_X + STACK_PLATE_WIDTH,
-        minY: STACK_PLATE_START_Y,
-        maxY: STACK_PLATE_START_Y + STACK_PLATE_HEIGHT,
       };
 
       const plateBounds = {
         minX: PLATE_START_X,
         maxX: PLATE_START_X + PLATE_WIDTH,
-        minY: PLATE_START_Y,
-        maxY: PLATE_START_Y + STACK_PLATE_HEIGHT,
       };
 
       if (
         e.clientX >= stackPlateBounds.minX &&
         e.clientX <= stackPlateBounds.maxX
-        // &&
-        // e.clientY >= bounds.minY &&
-        // e.clientY <= bounds.maxY
       ) {
         console.log('on stacking plate');
         // stop animation
         this.sprite.img.classList.remove('wobble');
         this.progressBar.hideBar();
         // move to stack plate
-        this.sprite.setX(
-          STACK_PLATE_START_X + STACK_PLATE_WIDTH / 2 - PANCAKE_WIDTH / 2,
-        );
-        // fix stacking order
-        this.sprite.setY(
-          STACK_PLATE_START_Y -
-            10 -
-            this.stackPlate.getNumPancakes * PANCAKE_STACK_OFFSET,
-        );
+
+        if (this.pancakeState !== PancakeState.STACKING) {
+          this.stackPlate.addPancake(this);
+        }
         this.pancakeState = PancakeState.STACKING;
-        this.stackPlate.addPancake();
+
         // check plating
       } else if (
         e.clientX >= plateBounds.minX &&
@@ -168,8 +159,11 @@ export class Pancake {
         // fix stacking order
         this.sprite.setY(PLATE_START_Y - 10);
         this.pancakeState = PancakeState.PLATING;
-        this.stackPlate.addPancake();
       } else {
+        if (this.pancakeState === PancakeState.STACKING) {
+          this.stackPlate.removePancake(this);
+        }
+        this.pancakeState = PancakeState.STOVE;
         this.restorePosition();
       }
       this._pointerDown = false;
@@ -204,8 +198,10 @@ export class Pancake {
   };
 
   flipPancake() {
-    if (this.cookType == CookType.HALF) {
-      this.flipped = true;
+    if (
+      this.cookType == CookType.HALF &&
+      this.game.getTool() === Tool.SPATULA
+    ) {
       this.sprite.img.classList.remove('bounce');
 
       // update sprite image with cooked pancake

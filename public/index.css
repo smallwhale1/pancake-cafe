@@ -4,6 +4,23 @@
   box-sizing: border-box;
 }
 
+/* Fonts */
+
+.allura-regular {
+  font-family: 'Allura', cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.tangerine-regular {
+}
+
+.poppins-regular {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
 #game-container {
   position: relative;
   /* background-color: rgb(255, 246, 230); */
@@ -45,6 +62,7 @@
 
 .spatula {
   z-index: 1;
+  pointer-events: none;
 }
 
 .plate {
@@ -120,4 +138,28 @@ button {
 
 button:hover {
   background-color: #ffd8a4;
+}
+
+.text-box {
+  position: relative;
+  top: 100px;
+  left: 300px;
+  background-color: #fff;
+  padding: 32px;
+  /* border: 1px solid #cccccc; */
+  border-radius: 8px;
+  max-width: 300px;
+  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+}
+
+.text-box::before {
+  content: '';
+  position: absolute;
+  bottom: -20px; /* Adjusted to account for the triangle height */
+  left: 20px; /* Adjusted to position the tip */
+  border-width: 10px 30px 10px 10px; /* Adjusted to slant the triangle */
+  border-style: solid;
+  border-color: #fff transparent transparent transparent;
+  display: block;
+  width: 0;
 }

@@ -83,3 +83,5 @@ export const KAI_HEIGHT = 500;
 export const KAI_WIDTH = KAI_HEIGHT * KAI_AR;
 export const CHARACTER_X = PADDING;
 export const CHARACTER_Y = TILE_SIZE;
+
+// bounding boxes

@@ -1,6 +1,9 @@
 import type Game from './Game';
+import type { Pancake } from './Pancake';
 import type Sprite from './Sprite';
 import {
+  PANCAKE_STACK_OFFSET,
+  PANCAKE_WIDTH,
   STACK_PLATE_HEIGHT,
   STACK_PLATE_START_X,
   STACK_PLATE_START_Y,
@@ -15,14 +18,14 @@ interface StackPlateProps {
 export class StackPlate {
   private game: Game;
   private container: HTMLDivElement;
-  private numPancakes: number;
+
+  private pancakes: Pancake[];
 
   constructor({ container, game }: StackPlateProps) {
+    this.pancakes = [];
     this.container = container;
     this.game = game;
     this.addStackPlate();
-
-    this.numPancakes = 0;
   }
 
   addStackPlate = () => {
@@ -40,14 +43,29 @@ export class StackPlate {
   };
 
   get getNumPancakes() {
-    return this.numPancakes;
+    return this.pancakes.length;
   }
 
-  addPancake = () => {
-    this.numPancakes++;
+  addPancake = (pancake: Pancake) => {
+    this.pancakes.push(pancake);
+    this.repositionPancakes();
   };
 
-  removePancake = () => {
-    this.numPancakes--;
+  removePancake = (pancake: Pancake) => {
+    const filtered = this.pancakes.filter((pc) => pc !== pancake);
+    this.pancakes = filtered;
+    this.repositionPancakes();
+  };
+
+  repositionPancakes = () => {
+    this.pancakes.forEach((pancake, i) => {
+      pancake.sprite.setX(
+        STACK_PLATE_START_X + STACK_PLATE_WIDTH / 2 - PANCAKE_WIDTH / 2,
+      );
+      // fix stacking order
+      pancake.sprite.setY(STACK_PLATE_START_Y - 10 - i * PANCAKE_STACK_OFFSET);
+      // fix stacking order
+      pancake.sprite.img.style.zIndex = `${i}`;
+    });
   };
 }
