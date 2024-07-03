@@ -1,17 +1,19 @@
+interface SpriteProps {
+  imgSrc: string;
+  posX: number;
+  posY: number;
+  width: number;
+  container: HTMLDivElement;
+  onClick: (ev: MouseEvent) => any;
+}
+
 export default class Sprite {
   img: HTMLImageElement;
   posX: number;
   posY: number;
   width: number;
 
-  constructor(
-    imgSrc: string,
-    posX: number,
-    posY: number,
-    width: number,
-    container: HTMLDivElement,
-    onClick: (ev: MouseEvent) => any,
-  ) {
+  constructor({ imgSrc, posX, posY, width, container, onClick }: SpriteProps) {
     this.img = document.createElement('img');
     this.img.className = 'sprite';
 
@@ -25,7 +27,7 @@ export default class Sprite {
     this.width = width;
 
     this.img.draggable = false;
-    this.img.onclick = onClick;
+    this.img.onpointerup = onClick;
 
     // append to the game container
     container.append(this.img);
@@ -34,6 +36,16 @@ export default class Sprite {
   updateImgSrc(newSrc: string) {
     this.img.src = newSrc;
   }
+
+  setX = (x: number) => {
+    this.posX = x;
+    this.img.style.left = `${this.posX}px`;
+  };
+
+  setY = (y: number) => {
+    this.posY = y;
+    this.img.style.top = `${this.posY}px`;
+  };
 
   moveX(x: number) {
     // update logically

@@ -1,14 +1,123 @@
-#img {
-  display: block;
-  margin: auto;
-  height: 128px;
-  width: 128px;
-  padding: 2rem;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-#canvas {
-  display: block;
-  margin: 2rem auto;
-  width: 540px;
-  height: 540px;
+#game-container {
+  position: relative;
+  /* background-color: rgb(255, 246, 230); */
+  /* overflow: scroll; */
+}
+
+.sprite {
+  position: absolute;
+  cursor: pointer;
+}
+
+.batter {
+  position: absolute;
+  cursor: pointer;
+  border-radius: 16px;
+  border: 10px solid rgb(218, 185, 160);
+  padding: 20px;
+  background-color: rgb(254, 223, 191);
+}
+
+.stove {
+  position: absolute;
+  cursor: pointer;
+  border-radius: 16px;
+  background-color: #4a3d39;
+}
+
+.bar {
+  position: absolute;
+  background-color: rgb(255, 121, 68);
+  border-radius: 50px;
+}
+
+.table {
+  position: absolute;
+  background-color: rgb(227, 168, 120);
+  border-radius: 16px;
+}
+
+.spatula {
+  z-index: 1;
+}
+
+.plate {
+  position: absolute;
+  background-color: #ffffff;
+  border-radius: 50%;
+}
+
+body {
+  background-color: #ffe4c2;
+}
+
+/* Animations */
+
+.bounce {
+  animation: bounce 1s infinite;
+}
+
+.wobble {
+  animation: wobble 1s infinite;
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0px);
+  }
+
+  25% {
+    transform: translateY(-5px);
+  }
+
+  50% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes wobble {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  20% {
+    transform: rotate(-5deg);
+  }
+
+  40% {
+    transform: rotate(5deg);
+  }
+
+  60% {
+    transform: rotate(0deg);
+  }
+}
+
+/* Util */
+
+button {
+  position: absolute;
+  padding: 12px 16px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  letter-spacing: 1px;
+  outline: none;
+  border: none;
+  cursor: pointer;
+
+  border: 2px solid rgb(241, 156, 91);
+  border-radius: 8px;
+  background-color: #ffefda;
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  background-color: #ffd8a4;
 }
